@@ -1,10 +1,16 @@
-<% @cue_sheet.cues.each do |cue| -%>
-<% if cue.roads && !cue.start? -%>
-<%= cue.block_distance_to_here.to_f %>km先(<%= cue.prev.roads.map { |r| "#{r}〜" }.join %>) :<%= cue.percent %>
-<% end -%>
-<%= cue.no %>: <%= cue.point.as_is || ("🚥#{"[#{cue.point.signal_name}]" if cue.point.signal_name }") %> <%= cue.direction %> <%= cue.road_to.try! { |next_road| "#{next_road}に" } %>
-<% if cue.other -%>
-(<%= cue.other %>)
-<% end -%>
-
-<% end -%>
+<html>
+<body>
+<h1>キューシート変換</h1>
+<form action="cue_sheet">
+  <div>
+    <input type="url" name="sheet_url" placeholder="Google SpreadsheetのシートのURL" size="128">
+  </div>
+  <div>
+    <input name="base_cell" placeholder="A5にNoの'1'があるなら'4,0'" size="32">
+  </div>
+  <div>
+    <input type="submit">
+  </div>
+</form>
+</body>
+</html>

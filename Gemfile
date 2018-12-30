@@ -8,3 +8,4 @@ gem 'activesupport', require: 'active_support/all'
 gem 'sinatra', require: false
 gem 'sinatra-contrib'
 gem 'erubis'
+gem 'tapp'

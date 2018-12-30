@@ -1,5 +1,7 @@
 require 'csv'
 require 'bigdecimal'
+require 'open-uri'
+require 'uri'
 
 class CueSheet
   class Cue
@@ -171,12 +173,25 @@ class CueSheet
     end
   end
 
-  def initialize
-    @cues = CSV.read('src.tsv', col_sep: "\t", headers: :first_row).map.with_index do |row, index|
-      row = row.each_with_object({}) do |(key, value), hash|
-        hash[key] = (value.gsub(/[ 　]+/, ' ').strip if value)
+  def self.load(sheet_url, base_cell)
+    url = URI(sheet_url)
+    gid = url.fragment[/gid=(\d+)/, 1]
+    query = "#{url.query}&format=csv&gid=#{gid}"
+    export_url = url + "export?#{query}"
+    all_data = CSV.parse(open(export_url).read.force_encoding('UTF-8'))
+    data = all_data[base_cell[0]..-1].map { |row| row[base_cell[1]..-1] }
+    data = data.take_while { |row| row[0].present? }
+    new(data)
+  end
+
+  HEADERS = %w(No 通過点 進路 道 区間距離 積算距離 情報・その他)
+
+  def initialize(data)
+    @cues = data.map.with_index do |row, index|
+      row = row.map do |value|
+        value.gsub(/[ 　]+/, ' ').strip if value
       end
-      Cue.new(row, self, index)
+      Cue.new(HEADERS.zip(row).to_h, self, index)
     end
   end
 
