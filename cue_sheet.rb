@@ -1,7 +1,5 @@
 require 'csv'
 require 'bigdecimal'
-require 'bundler'
-Bundler.require
 
 class CueSheet
   class Cue
@@ -55,6 +53,8 @@ class CueSheet
         @signal = signal
         @signal_name = signal_name
       end
+
+      attr_reader :signal, :signal_name
 
       def as_is
         @src if !@signal
@@ -154,7 +154,11 @@ class CueSheet
     end
 
     def route
-      "#{block_distance_to_here.to_f}km先(#{prev.roads.map { |r| "#{r}〜" }.join}) :#{percent}" if roads && !@index.zero?
+      "#{block_distance_to_here.to_f}km先(#{prev.roads.map { |r| "#{r}〜" }.join}) :#{percent}" if roads && !start?
+    end
+
+    def start?
+      @index.zero?
     end
 
     def to_s
@@ -188,5 +192,3 @@ class CueSheet
     cues.join("\n")
   end
 end
-
-puts CueSheet.new
