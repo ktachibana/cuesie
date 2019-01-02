@@ -185,25 +185,62 @@ class CueSheet
     end
   end
 
-  def self.load(sheet_url, base_cell)
+  def self.load(sheet_url)
+    export_url = to_export_url(sheet_url)
+
+    all_data = CSV.parse(open(export_url).read.force_encoding('UTF-8'))
+
+    indices = {
+        'No' => /^NO/i,
+        '通過点' => /^通過点/,
+        '進路' => /^進路/,
+        '道' => /^ルート/,
+        '区間距離' => /^区間/,
+        '積算距離' => /^積算/,
+        '情報・その他' => /^情報/
+    }.map do |column, matcher|
+      [column, search_in_head(all_data, matcher)[1]]
+    end.to_h
+    row_begin_index = indices.values[0][0] + 1
+    col_indices = indices.map do |column, index|
+      [column, index[1]]
+    end.to_h
+
+    data = all_data[row_begin_index..-1].map { |row| row[col_indices['No']..-1] }
+    data = data.take_while { |row| row[0].present? }
+    data = data.map do |row|
+      col_indices.map do |column, index|
+        value = row[index]
+        value = value.tapp.gsub(/[ 　]+/, ' ').strip if value
+        [column, value]
+      end.to_h
+    end
+
+    title, _ = search_in_head(all_data, /^\d+BRM/)
+    new(data, title)
+  end
+
+  def self.to_export_url(sheet_url)
     url = URI(sheet_url)
     gid = url.fragment[/gid=(\d+)/, 1]
     query = "#{url.query}&format=csv&gid=#{gid}"
-    export_url = url + "export?#{query}"
-    all_data = CSV.parse(open(export_url).read.force_encoding('UTF-8'))
-    data = all_data[base_cell[0]..-1].map { |row| row[base_cell[1]..-1] }
-    data = data.take_while { |row| row[0].present? }
-    new(data, all_data[1][1])
+    url + "export?#{query}"
+  end
+
+  def self.search_in_head(all_data, matcher)
+    all_data.first(10).each_with_index do |row, row_i|
+      row.each_with_index do |value, col_i|
+        return [value, [row_i, col_i]] if matcher === value
+      end
+    end
+    nil
   end
 
   HEADERS = %w(No 通過点 進路 道 区間距離 積算距離 情報・その他)
 
   def initialize(data, title)
     @cues = data.map.with_index do |row, index|
-      row = row.map do |value|
-        value.gsub(/[ 　]+/, ' ').strip if value
-      end
-      Cue.new(HEADERS.zip(row).to_h, self, index)
+      Cue.new(row, self, index)
     end
     @title = title
   end
@@ -217,4 +254,5 @@ class CueSheet
   def to_s
     cues.join("\n")
   end
+
 end

@@ -1,11 +1,12 @@
 !!!
 %html
+  %head
+    %link{href: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css', rel: 'stylesheet'}
+    %meta{name: 'viewport', content: 'width=device-width, initial-scale=1, shrink-to-fit=no'}
   %body
     %h1 キューシート変換
-    %form{:action => "cue_sheet"}
-      %div
-        %input{:name => "sheet_url", :placeholder => "Google SpreadsheetのシートのURL", :size => "128", :type => "url"}/
-      %div
-        %input{:name => "base_cell", :placeholder => "A5にNoの'1'があるなら'4,0'", :size => "32"}/
-      %div
-        %input{:type => "submit"}/
+    %form{action: 'cue_sheet'}
+      %div.form-group
+        %input.form-control{name: 'sheet_url', placeholder: 'Google SpreadsheetのシートのURL', style: 'width: 100%;', type: 'url'}/
+      %div.form-group
+        %input.btn.btn-primary{type: 'submit'}/

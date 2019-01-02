@@ -1,6 +1,10 @@
 @page
   size: 148mm 105mm
 
+body
+  margin: 0
+  padding: 0
+
 .cue-sheet
   display: flex
   flex-wrap: wrap
@@ -15,13 +19,16 @@
     max-width: 7cm
     margin: 0
     vertical-align: top
+    line-height: 1.1em
 
     .header
       float: right
       color: silver
+      font-size: smaller
       border-left: 1px silver dashed
       border-bottom: 1px silver dashed
       padding: 0 0.125em
+      text-align: right
 
     .no
       font-weight: bold
@@ -30,7 +37,6 @@
       display: inline
 
     .roads
-      display: inline
       padding-bottom: 0.25em
 
     .block-distance
@@ -46,10 +52,7 @@
 
     .other
       font-style: italic
+      display: inline
 
     .percent
       color: silver
-
-  div
-    display: inline-block
-

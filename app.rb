@@ -1,3 +1,6 @@
+require 'bundler'
+Bundler.require
+
 require 'sinatra'
 require 'sinatra/reloader' if development?
 require File.dirname(__FILE__) + '/cue_sheet'
@@ -7,7 +10,7 @@ get '/' do
 end
 
 get '/cue_sheet' do
-  @cue_sheet = CueSheet.load(params[:sheet_url], params[:base_cell].split(',', 2).map(&:to_i))
+  @cue_sheet = CueSheet.load(params[:sheet_url])
   haml :cue_sheet
 end
 
