@@ -1,0 +1,55 @@
+@page
+  size: 148mm 105mm
+
+.cue-sheet
+  display: flex
+  flex-wrap: wrap
+  font-size: 0.75em
+
+  .cue-row
+    *
+      page-break-inside: avoid
+
+  .cue
+    border: 1px silver solid
+    max-width: 7cm
+    margin: 0
+    vertical-align: top
+
+    .header
+      float: right
+      color: silver
+      border-left: 1px silver dashed
+      border-bottom: 1px silver dashed
+      padding: 0 0.125em
+
+    .no
+      font-weight: bold
+
+    .content
+      display: inline
+
+    .roads
+      display: inline
+      padding-bottom: 0.25em
+
+    .block-distance
+      font-weight: bold
+
+    .point
+      font-weight: bold
+      word-break-wrap: none
+      background-color: lightgray
+    &.pc
+      .point-desc
+        color: red
+
+    .other
+      font-style: italic
+
+    .percent
+      color: silver
+
+  div
+    display: inline-block
+

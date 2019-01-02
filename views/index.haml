@@ -1,0 +1,11 @@
+!!!
+%html
+  %body
+    %h1 キューシート変換
+    %form{:action => "cue_sheet"}
+      %div
+        %input{:name => "sheet_url", :placeholder => "Google SpreadsheetのシートのURL", :size => "128", :type => "url"}/
+      %div
+        %input{:name => "base_cell", :placeholder => "A5にNoの'1'があるなら'4,0'", :size => "32"}/
+      %div
+        %input{:type => "submit"}/

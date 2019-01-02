@@ -3,12 +3,14 @@ require 'sinatra/reloader' if development?
 require File.dirname(__FILE__) + '/cue_sheet'
 
 get '/' do
-  erb :index
+  haml :index
 end
 
 get '/cue_sheet' do
-  content_type :text
   @cue_sheet = CueSheet.load(params[:sheet_url], params[:base_cell].split(',', 2).map(&:to_i))
-  erb :cue_sheet
+  haml :cue_sheet
 end
 
+get '/cue_sheet.sass' do
+  sass :cue_sheet
+end

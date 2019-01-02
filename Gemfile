@@ -11,3 +11,5 @@ gem 'sinatra', require: false
 gem 'sinatra-contrib'
 gem 'erubis'
 gem 'tapp'
+gem 'sass'
+gem 'haml'

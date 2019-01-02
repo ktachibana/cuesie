@@ -62,6 +62,10 @@ class CueSheet
         @src if !@signal
       end
 
+      def pc?
+        @src&.match?(/^PC(\d+)/)
+      end
+
       def to_s
         as_is || ("🚥#{"[#{@signal_name}]" if @signal_name }")
       end
@@ -115,6 +119,10 @@ class CueSheet
       row['情報・その他']
     end
 
+    def roads_to_here
+      prev&.roads
+    end
+
     def road_to
       roads[0]
     end
@@ -163,6 +171,10 @@ class CueSheet
       @index.zero?
     end
 
+    def pc?
+      point.pc?
+    end
+
     def to_s
       [
           route,
@@ -181,23 +193,22 @@ class CueSheet
     all_data = CSV.parse(open(export_url).read.force_encoding('UTF-8'))
     data = all_data[base_cell[0]..-1].map { |row| row[base_cell[1]..-1] }
     data = data.take_while { |row| row[0].present? }
-    new(data)
+    new(data, all_data[1][1])
   end
 
   HEADERS = %w(No 通過点 進路 道 区間距離 積算距離 情報・その他)
 
-  def initialize(data)
+  def initialize(data, title)
     @cues = data.map.with_index do |row, index|
       row = row.map do |value|
         value.gsub(/[ 　]+/, ' ').strip if value
       end
       Cue.new(HEADERS.zip(row).to_h, self, index)
     end
+    @title = title
   end
 
-  def cues
-    @cues
-  end
+  attr_reader :cues, :title
 
   def goal_distance
     cues.last.total_distance_to_here

@@ -1,0 +1,28 @@
+%table.cue-sheet
+  %tbody.cue-row
+    - @cue_sheet.cues.in_groups_of(4, false).each do |cues|
+      %tr
+        - cues.each do |cue|
+          %td.cue{class: ('pc' if cue.pc?)}
+            .header
+              .percent= cue.percent
+              .no= cue.no
+            .content
+              - if cue.roads && !cue.start?
+                .roads
+                  %span.block-distance
+                    #{cue.block_distance_to_here.to_f}km先
+                  %span.roads-to-here
+                    (#{cue.roads_to_here.map {|r| "#{r}〜"}.join})
+              - else
+                START!
+
+              .point
+                %span.point-desc
+                  = cue.point.as_is || ("🚥#{"[#{cue.point.signal_name}]" if cue.point.signal_name }")
+                = cue.direction
+                - cue.road_to.try! do |next_road|
+                  #{next_road}に
+              - if cue.other
+                .other
+                  = cue.other
