@@ -128,7 +128,7 @@ class CueSheet
     end
 
     def block_distance_to_here
-      BigDecimal(block_distance_to_here_src) if block_distance_to_here_src
+      BigDecimal(block_distance_to_here_src || prev&.block_distance_to_here_src || '0')
     end
 
     def block_distance_to_here_src
@@ -136,7 +136,7 @@ class CueSheet
     end
 
     def total_distance_to_here
-      BigDecimal(total_distance_to_here_src) if total_distance_to_here_src
+      BigDecimal(total_distance_to_here_src || prev&.total_distance_to_here_src || '0')
     end
 
     def total_distance_to_here_src
@@ -144,11 +144,11 @@ class CueSheet
     end
 
     def prev
-      @sheet.cues[@index - 1]
+      @sheet.cues.at(@index - 1) if 0 < @index
     end
 
     def next
-      @sheet.cues[@index + 1]
+      @sheet.cues.at(@index + 1)
     end
 
     def move
@@ -159,8 +159,24 @@ class CueSheet
       result
     end
 
+    def progress
+      total_distance_to_here / @sheet.goal_distance
+    end
+
     def percent
-      format('%.1f%%', (total_distance_to_here / @sheet.goal_distance) * 100)
+      format('%.1f%%', progress * 100)
+    end
+
+    def times
+      return [] unless other
+
+      current_date = prev.try! { |prev_cue| prev_cue.times.reverse.last } || Time.current
+      other.scan(/((\d+)?(\d+)\/(\d+)[ 　]+)?(\d+):(\d+)/).map do |have_date, *args|
+        parts = args.map { |s| s&.to_i }
+        current_date = Time.local(parts[0] || current_date.year, parts[1], parts[2]) if have_date
+        # まだ日を跨げない
+        current_date + (parts[3].hours + parts[4].minutes)
+      end
     end
 
     def route
@@ -175,13 +191,8 @@ class CueSheet
       point.pc?
     end
 
-    def to_s
-      [
-          route,
-          "#{no}: #{move}",
-          ("(#{other})" if other),
-          '',
-      ].compact.join("\n")
+    def estimate_time
+      (@sheet.start_time + (@sheet.time_duration * progress.to_f))
     end
   end
 
@@ -255,4 +266,15 @@ class CueSheet
     cues.join("\n")
   end
 
+  def start_time
+    cues.first.times&.first
+  end
+
+  def end_time
+    cues.last.times&.last
+  end
+
+  def time_duration
+    end_time - start_time
+  end
 end

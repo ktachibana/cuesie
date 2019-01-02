@@ -5,7 +5,7 @@
         - cues.each do |cue|
           %td.cue{class: ('pc' if cue.pc?)}
             .header
-              %span.percent= cue.percent
+              %span= cue.estimate_time.strftime('%H:%M')
               %span.no= cue.no
             .content
               .roads
