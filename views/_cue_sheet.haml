@@ -19,7 +19,12 @@
 
               %span.point
                 %span.point-desc
-                  = cue.point.as_is || ("🚥#{"[#{cue.point.signal_name}]" if cue.point.signal_name }")
+                  - if cue.point.as_is
+                    = cue.point.as_is
+                  - else
+                    %img{src: '/signal.svg', width: 16, height: 16}
+                    - if cue.point.signal_name
+                      #{"[#{cue.point.signal_name}]"}
                 = cue.direction
                 - cue.road_to.try! do |next_road|
                   #{next_road}に
