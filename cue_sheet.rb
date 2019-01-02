@@ -211,7 +211,7 @@ class CueSheet
     data = data.map do |row|
       col_indices.map do |column, index|
         value = row[index]
-        value = value.tapp.gsub(/[ 　]+/, ' ').strip if value
+        value = value.gsub(/[ 　]+/, ' ').strip if value
         [column, value]
       end.to_h
     end
