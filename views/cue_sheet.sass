@@ -19,11 +19,10 @@ body
     max-width: 7cm
     margin: 0
     vertical-align: top
-    line-height: 1.1em
+    line-height: 1.2
 
     .header
       float: right
-      color: gray
       font-size: smaller
       border-left: 1px silver dashed
       border-bottom: 1px silver dashed
@@ -43,12 +42,20 @@ body
       font-weight: bold
 
     .point
-      font-weight: bold
       word-break-wrap: none
+      border: 1px darkgray solid
+
+    .move
+      font-weight: bold
       background-color: lightgray
+
+    .intersection
+      color: blue
+
     &.pc
-      .point-desc
-        color: red
+      .intersection
+        background-color: lightpink
+
 
     .other
       font-style: italic

@@ -3,6 +3,7 @@
   %head
     %title= @cue_sheet.title
     %meta{content: 'text/html; charset=UTF-8', "http-equiv" => "Content-Type"}/
+    %script{defer: true, src: 'https://use.fontawesome.com/releases/v5.6.3/js/all.js', integrity: 'sha384-EIHISlAOj4zgYieurP0SdoiBYfGJKkgWedPHH4jCzpCXLmzVsw1ouK59MuUtP4a1', crossorigin: 'anonymous'}
     %link{href: 'cue_sheet.sass', rel: 'stylesheet'}/
   %body
     = haml :_cue_sheet

@@ -11,23 +11,27 @@
               .roads
                 - if cue.roads && !cue.start?
                   %span.block-distance
-                    #{cue.block_distance_to_here.to_f}km先
+                    #{cue.block_distance_to_here.to_f}km
                   %span.roads-to-here
-                    (#{cue.roads_to_here.map {|r| "#{r}〜"}.join})
+                    (#{cue.roads_to_here.map {|r| "#{r}→"}.join})
                 - else
-                  START!
+                  START
 
-              %span.point
-                %span.point-desc
-                  - if cue.point.as_is
-                    = cue.point.as_is
-                  - else
-                    %img{src: '/signal.svg', width: 16, height: 16}
-                    - if cue.point.signal_name
-                      #{"[#{cue.point.signal_name}]"}
-                = cue.direction
-                - cue.road_to.try! do |next_road|
-                  #{next_road}に
+              %span.point<>
+                %span.move
+                  %span.intersection
+                    - if cue.point.as_is
+                      = cue.point.as_is
+                    - else
+                      %span.fas.fa-traffic-light
+                      - if cue.point.signal_name
+                        #{"[#{cue.point.signal_name}]"}
+                  %span.direction
+                    - if (symbol = cue.direction_ref(l: :left, r: :right, s: :up))
+                      %span{class: "fas fa-arrow-#{symbol}"}
+                    - else
+                      = cue.direction_src
+                = cue.road_to.try! { |next_road| "#{next_road}に" }
               - if cue.other
                 %span.other
                   = cue.other

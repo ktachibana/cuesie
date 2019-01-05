@@ -100,11 +100,13 @@ class CueSheet
       direction_symbol || direction_src
     end
 
-    def direction_symbol
-      {
-          '左折' => '↰',
-          '右折' => '↱'
+    def direction_ref(table)
+      key = {
+          '左折' => :l,
+          '右折' => :r,
+          '直進' => :s
       }[direction_src]
+      table[key]
     end
 
     def road_src
@@ -170,7 +172,7 @@ class CueSheet
     def times
       return [] unless other
 
-      current_date = prev.try! { |prev_cue| prev_cue.times.reverse.last } || Time.current
+      current_date = prev.try! { |prev_cue| prev_cue.times.reverse.last } || Time.current.beginning_of_day
       other.scan(/((\d+)?(\d+)\/(\d+)[ 　]+)?(\d+):(\d+)/).map do |have_date, *args|
         parts = args.map { |s| s&.to_i }
         current_date = Time.local(parts[0] || current_date.year, parts[1], parts[2]) if have_date
