@@ -217,8 +217,8 @@ class CueSheet
       [column, index[1]]
     end.to_h
 
-    data = all_data[row_begin_index..-1].map { |row| row[col_indices['No']..-1] }
-    data = data.take_while { |row| row[0].present? }
+    data = all_data[row_begin_index..-1]
+    data = data.take_while { |row| row[col_indices['No']].present? }
     data = data.map do |row|
       col_indices.map do |column, index|
         value = row[index]
