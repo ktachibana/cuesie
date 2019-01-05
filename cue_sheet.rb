@@ -38,7 +38,6 @@ class CueSheet
 
       def to_s
         @src
-        # as_is || "#{TYPES[@type.to_sym]}#{@number}号"
       end
     end
 
@@ -71,6 +70,8 @@ class CueSheet
       end
     end
 
+
+    extend ::Memoist
 
     def initialize(row, sheet, index)
       @row = row
@@ -116,6 +117,7 @@ class CueSheet
     def roads
       Road.parse_roads(road_src)
     end
+    memoize :roads
 
     def other
       row['情報・その他']
@@ -169,15 +171,31 @@ class CueSheet
       format('%.1f%%', progress * 100)
     end
 
-    def times
-      return [] unless other
+    TIME_PATTERN = %r|(?:(?:(?<year>\d+)/)?(?<month>\d+)\/(?<day>\d+)[ 　]+)?(?<hour>\d+):(?<min>\d+)|
 
-      current_date = prev.try! { |prev_cue| prev_cue.times.reverse.last } || Time.current.beginning_of_day
-      other.scan(/((\d+)?(\d+)\/(\d+)[ 　]+)?(\d+):(\d+)/).map do |have_date, *args|
-        parts = args.map { |s| s&.to_i }
-        current_date = Time.local(parts[0] || current_date.year, parts[1], parts[2]) if have_date
-        # まだ日を跨げない
-        current_date + (parts[3].hours + parts[4].minutes)
+    def times
+      current_time = prev.try! { |prev_cue| prev_cue.times.last } || Time.current.beginning_of_year
+
+      all_time_parts.map do |time_parts|
+        current_time = current_time.change(time_parts)
+        current_time
+      end.presence || [current_time]
+    end
+    memoize :times
+
+    def all_time_parts
+      all_match(TIME_PATTERN, other).map do |time_parts_str|
+        time_parts_str.reject { |_k, v| v.blank? }.map { |k, v| [k.to_sym, v.to_i] }.to_h
+      end
+    end
+
+    def all_match(regexp, string)
+      Enumerator.new do |y|
+        current = string.to_s
+        while (match = regexp.match(current))
+          y << match.named_captures
+          current = match.post_match
+        end
       end
     end
 
