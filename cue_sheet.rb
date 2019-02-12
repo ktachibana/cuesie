@@ -220,6 +220,11 @@ class CueSheet
     export_url = to_export_url(sheet_url)
 
     all_data = CSV.parse(open(export_url).read.force_encoding('UTF-8'))
+    all_data = all_data.map do |row|
+      row.map do |value|
+        value.tr('：　（）ａ-ｚ', ': ()a-z')  if value
+      end
+    end
 
     indices = {
         'No' => /^NO/i,
